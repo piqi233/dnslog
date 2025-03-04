@@ -1,4 +1,10 @@
 # dnslog
+usage:
+
+更换你的域名：
+![image](https://github.com/user-attachments/assets/8931a554-546c-4015-8710-2c726289588f)
+
+运行脚本：
 python dnslog.py 
 ![image](https://github.com/user-attachments/assets/aee25475-e2ff-4510-a2a2-99b1fb42fd08)
 
