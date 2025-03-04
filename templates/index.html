@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNSLog Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .button {
+            padding: 10px 15px;
+            margin: 5px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>DNSLog Platform</h1>
+    <div>
+        <button class="button" onclick="generateDomain()">获取 DNS 域名</button>
+        <button class="button" onclick="fetchRequests()">刷新记录</button>
+        <button class="button" onclick="clearRequests()">清空记录</button>
+    </div>
+    <p id="generated-domain"></p>
+    <table id="requests-table">
+        <thead>
+            <tr>
+                <th>Domain</th>
+                <th>Client IP</th>
+                <th>Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be populated by JavaScript -->
+        </tbody>
+    </table>
+
+    <script>
+        // 获取 DNS 请求记录
+        function fetchRequests() {
+            fetch('/api/requests')
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector('#requests-table tbody');
+                    tbody.innerHTML = ''; // 清空现有内容
+                    data.forEach(request => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${request[0]}</td>
+                            <td>${request[1]}</td>
+                            <td>${request[2]}</td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                });
+        }
+
+        // 生成随机域名
+        function generateDomain() {
+            fetch('/api/generate-domain')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('generated-domain').innerText = `生成的域名: ${data.domain}`;
+                });
+        }
+
+        // 清空 DNS 请求记录
+        function clearRequests() {
+            fetch('/api/clear-requests', { method: 'POST' })
+                .then(() => fetchRequests()); // 清空后刷新记录
+        }
+
+        // 每 5 秒刷新一次
+        setInterval(fetchRequests, 5000);
+        // 页面加载时立即刷新
+        fetchRequests();
+    </script>
+</body>
+</html>
